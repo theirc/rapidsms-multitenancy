@@ -1,0 +1,2 @@
+rapidsms_multitenancy
+=====================
