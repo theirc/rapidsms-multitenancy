@@ -1,3 +1,3 @@
-"<Include a description of your project>"
+"Host multiple RapidSMS instances in one project"
 
-__version__ = '0.0.0'
+__version__ = '0.0.1'
