@@ -1,0 +1,3 @@
+[run]
+source = multitenancy
+omit = */tests*,*/migrations/*

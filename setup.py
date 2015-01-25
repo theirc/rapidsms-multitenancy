@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 required_packages = [
-    'django>=1.3',
+    'rapidsms>=0.18.0',
 ]
 
 
@@ -18,13 +18,13 @@ def read_file(filename):
 
 
 setup(
-    name='django-multitenancy',
+    name='rapidsms-multitenancy',
     version=__import__('multitenancy').__version__,
     author='International Rescue Committee',
     author_email='rescuesms-team@caktusgroup.com',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/theirc/rapidsms_multitenancy',
+    url='https://github.com/theirc/rapidsms-multitenancy',
     license='BSD',
     description=' '.join(__import__('multitenancy').__doc__.splitlines()).strip(),
     classifiers=[
