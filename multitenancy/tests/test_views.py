@@ -93,7 +93,7 @@ class GroupLandingViewTestCase(GroupViewMixin, TestCase):
         other = mommy.make('TenantGroup')
         other_tenant = mommy.make('Tenant', group=other)
         mommy.make('TenantRole',
-                   group=other, tenant=other_tenant,  user=self.user,
+                   group=other, tenant=other_tenant, user=self.user,
                    role=models.TenantRole.ROLE_TENANT_MANAGER)
         with self.assertTemplateUsed('multitenancy/group-landing.html'):
             response = self.client.get(self.url())

@@ -2,7 +2,8 @@ from django.db import models, IntegrityError
 from django.test import TestCase
 
 from model_mommy import mommy
-from rapidsms.router.db.models import Message
+from rapidsms.backends.database import DatabaseBackend
+from rapidsms.backends.database.models import BackendMessage
 from rapidsms.tests.harness import CustomRouterMixin
 
 from ..models import MultitenantIncompatiblityError, TenantEnabled
@@ -35,38 +36,40 @@ class TenantModelTest(TestCase):
 
 class BackendTest(CustomRouterMixin, TestCase):
 
-    router_class = 'rapidsms.router.db.DatabaseRouter'
+    backends = {
+        'tenant_backend': {'ENGINE': DatabaseBackend},
+        'other_backend': {'ENGINE': DatabaseBackend},
+    }
 
     def setUp(self):
-        # create backend
-        self.backend_link = mommy.make('BackendLink')
         # create tenant
         self.tenant = mommy.make('Tenant')
-        # associate tenant with backend
-        self.tenant.backendlink_set.add(self.backend_link)
+        # create backend
+        self.tenant_backend = self.create_backend(data={'name': 'tenant_backend'})
+        self.tenant_backend_link = mommy.make('BackendLink', tenant=self.tenant, backend=self.tenant_backend)
 
     def test_get_tenant_assoicated_with_backend(self):
-        self.assertEqual(self.backend_link.tenant, self.tenant)
+        self.assertEqual(self.tenant_backend_link.tenant, self.tenant)
 
     def test_get_list_of_backends(self):
         second_backend = mommy.make('BackendLink')
         self.tenant.backendlink_set.add(second_backend)
-        self.assertIn(self.backend_link.backend.name, self.tenant.get_backend_names())
+        self.assertIn(self.tenant_backend_link.backend.name, self.tenant.get_backend_names())
         self.assertIn(second_backend.backend.name, self.tenant.get_backend_names())
 
     def test_tenant_gets_messages_to_its_backend(self):
         # create second backend
-        other_backend_link = mommy.make('BackendLink')
+        other_backend = self.create_backend(data={'name': 'other_backend'})
+        mommy.make('BackendLink', backend=other_backend)
         # receive message and send response via both backends
-        tenant_conn = self.lookup_connections(identities=['5551212'], backend=self.backend_link.backend)[0]
-        other_conn = self.lookup_connections(identities=['5551212'], backend=other_backend_link.backend)[0]
-        self.receive('echo tenant message', tenant_conn)
-        self.receive('echo other message', other_conn)
+        tenant_conn = self.lookup_connections(identities=['5551212'], backend=self.tenant_backend)[0]
+        other_conn = self.lookup_connections(identities=['5551212'], backend=other_backend)[0]
+        self.send('echo tenant message', tenant_conn)
+        self.send('echo other message', other_conn)
         # only messages via associated backend show up in query
-        expected_count = 2  # one incoming + one outgoing
-        tenant_messages = Message.objects.filter(transmissions__connection__backend__in=self.tenant.get_backends())
-        self.assertEqual(tenant_messages.count(), expected_count)
-        self.assertEqual(tenant_messages.filter(text__contains='tenant message').count(), expected_count)
+        expected_count = 1
+        tenant_backend_names = [b.name for b in self.tenant.get_backends()]
+        self.assertEqual(expected_count, BackendMessage.objects.filter(name__in=tenant_backend_names).count())
 
 
 class TestModel(TenantEnabled):
