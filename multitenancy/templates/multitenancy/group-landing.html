@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Group Selection" %}{% endblock %}
+
+{% block content %}
+    {% if count %}
+        <h1>{% trans "Choose a group" %}</h1>
+        <div>
+            {% for group in groups %}
+                <div>
+                    <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <h1>{% trans "You do not have permissions to manage any groups." %}</h1>
+    {% endif %}
+{% endblock %}

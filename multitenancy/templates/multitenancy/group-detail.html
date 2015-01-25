@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ group.name }} {% trans "Dashboard" %}{% endblock %}
+
+{% block content %}
+    <h1>{{ group.name }} {% trans "Dashboard" %}</h1>
+    <div>
+        {% if can_edit_group %}
+            <a href="{% url 'admin:multitenancy_tenantgroup_change' group.pk %}">{% trans "Tenant Group Settings" %}</a>
+        {% endif %}
+        <h2>{% trans "Tenants" %}</h2>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>{% trans "Tenant Name" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Backend" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tenant in tenants %}
+                    <tr>
+                        <td><a href="{{ tenant.get_absolute_url }}">{{ tenant.name }}</a></td>
+                        <td>{{ tenant.description }}</td>
+                        <td>{# This does a query per tenant. Move to a view if # of tenants becomes unexpectedly high #}
+                            {{ tenant.primary_backend }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
