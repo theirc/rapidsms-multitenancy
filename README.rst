@@ -3,6 +3,11 @@ rapidsms-multitenancy
 
 rapidsms-multitenancy allows you to host multiple RapidSMS instances in one cohesive project.
 
+.. WARNING::
+
+   This is pre-alpha software. The code is subject to change without notice and there is no
+   documentation. It is probably not ready for production use.
+
 
 Description
 -----------
@@ -14,7 +19,7 @@ it's a pain to install RapidSMS in each location as you'd have to do each instal
 keep each installation updated, and have user accounts duplicated over installations.
 
 rapidsms-multitenancy allows you to have one central RapidSMS installation with multiple tenants.
-Each tenant is associated with one or more RapidSMS backends with the aim of keeping each tenant
+Each tenant is associated with one RapidSMS backend with the aim of keeping each tenant
 separate. Superusers of the system can view multiple tenants.
 
 
@@ -23,8 +28,7 @@ Running the Tests
 
 You can run the tests with via::
 
-    python runtests.py
-
+    python setup.py test
 
 
 License

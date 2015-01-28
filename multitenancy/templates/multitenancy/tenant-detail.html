@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ tenant.name }} {% trans "Tenant Dashboard" %}{% endblock %}
+
+{% block content %}
+    <h1>{{ tenant.name }} {% trans "Tenant Dashboard" %}</h1>
+    {% if can_edit_tenant %}
+        <a href="{% url 'admin:multitenancy_tenant_change' tenant.pk %}">{% trans 'Tenant Settings' %}</a>
+    {% endif %}
+{% endblock %}
