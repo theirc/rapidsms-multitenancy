@@ -29,7 +29,8 @@ class TenantForm(forms.ModelForm):
         # we can't update backendlinks until tenant and tenantgroup
         # have been saved, so add them to the tenant object and save
         # them in the model save method
-        tenant.unsaved_backendlinks = [self.cleaned_data['backend_link'], ]
+        if self.cleaned_data['backend_link']:
+            tenant.unsaved_backendlinks = [self.cleaned_data['backend_link'], ]
         if commit:
             tenant.save()
         return tenant

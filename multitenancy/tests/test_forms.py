@@ -43,6 +43,18 @@ class TenantFormTest(TestCase):
         })
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_tenant_with_no_backend_is_allowed(self):
+        group = mommy.make('TenantGroup')
+        form = TenantForm(data={
+            'name': 'randomname',
+            'slug': 'randomname',
+            'group': group.pk,
+            'backend_link': None,
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+        tenant = form.save()
+        self.assertFalse(tenant.backendlink_set.exists())
+
     def test_saving_form_updates_backends(self):
         group = mommy.make('TenantGroup')
         old_link, new_link = mommy.make('BackendLink', _quantity=2)
