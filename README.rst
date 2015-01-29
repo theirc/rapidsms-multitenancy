@@ -1,6 +1,12 @@
 rapidsms-multitenancy
 =====================
 
+.. image:: https://travis-ci.org/theirc/rapidsms-multitenancy.svg?branch=master
+    :target: https://travis-ci.org/theirc/rapidsms-multitenancy
+
+.. image:: https://coveralls.io/repos/theirc/rapidsms-multitenancy/badge.svg?branch=master
+    :target: https://coveralls.io/r/theirc/rapidsms-multitenancy?branch=master
+
 rapidsms-multitenancy allows you to host multiple RapidSMS instances in one cohesive project.
 
 .. WARNING::
