@@ -3,6 +3,7 @@ import sys
 
 import django
 from django.conf import settings
+from django.test.utils import get_runner
 
 
 if not settings.configured:
@@ -32,17 +33,14 @@ if not settings.configured:
         # multitenancy uses a test-only model, which won't be loaded if we only load
         # our real migration files, so point to a nonexistent one, which will make
         # the test runner load all of the models it finds.
-        MIGRATION_MODULES = {
+        MIGRATION_MODULES={
             'multitenancy': 'multitenancy.migrations_not_used_in_tests'
         },
         ROOT_URLCONF='multitenancy.tests.urls',
         SITE_ID=1,
         SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
-        STATIC_URL = '/static/',
+        STATIC_URL='/static/',
     )
-
-
-from django.test.utils import get_runner
 
 
 def runtests():
