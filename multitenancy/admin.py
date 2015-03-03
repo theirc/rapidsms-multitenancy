@@ -67,7 +67,7 @@ class TenantGroupAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         """Limit to TenantGroups that this user can access."""
-        qs = super(TenantGroupAdmin, self).queryset(request)
+        qs = super(TenantGroupAdmin, self).get_queryset(request)
         if is_group_manager(request.user):
             qs = qs.filter(tenantrole__user=request.user)
         return qs
@@ -125,7 +125,7 @@ class TenantAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         """Limit to Tenants that this user can access."""
-        qs = super(TenantAdmin, self).queryset(request)
+        qs = super(TenantAdmin, self).get_queryset(request)
         if is_group_manager(request.user):
             qs = qs.filter(group__tenantrole__user=request.user)
         elif is_tenant_manager(request.user):
