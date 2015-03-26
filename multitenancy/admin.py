@@ -2,7 +2,6 @@ from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .auth import is_group_manager, is_tenant_manager
 from .forms import TenantForm
 from .models import BackendLink, ContactLink, Tenant, TenantGroup, TenantRole
 
@@ -68,8 +67,9 @@ class TenantGroupAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         """Limit to TenantGroups that this user can access."""
         qs = super(TenantGroupAdmin, self).get_queryset(request)
-        if is_group_manager(request.user):
-            qs = qs.filter(tenantrole__user=request.user)
+        if not request.user.is_superuser:
+            qs = qs.filter(tenantrole__user=request.user,
+                           tenantrole__role=TenantRole.ROLE_GROUP_MANAGER)
         return qs
 
     def get_inline_instances(self, request, obj=None):
@@ -126,10 +126,16 @@ class TenantAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         """Limit to Tenants that this user can access."""
         qs = super(TenantAdmin, self).get_queryset(request)
-        if is_group_manager(request.user):
-            qs = qs.filter(group__tenantrole__user=request.user)
-        elif is_tenant_manager(request.user):
-            qs = qs.filter(tenantrole__user=request.user)
+        if not request.user.is_superuser:
+            tenants_by_group_manager_role = qs.filter(
+                group__tenantrole__user=request.user,
+                group__tenantrole__role=TenantRole.ROLE_GROUP_MANAGER
+            )
+            tenants_by_tenant_manager_role = qs.filter(
+                tenantrole__user=request.user,
+                tenantrole__role=TenantRole.ROLE_TENANT_MANAGER
+            )
+            return tenants_by_group_manager_role | tenants_by_tenant_manager_role
         return qs
 
 admin.site.register(BackendLink)
