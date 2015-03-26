@@ -86,8 +86,11 @@ class TenantManagerForm(forms.ModelForm):
         fields = ('user', )
 
     def clean(self):
-        if self.instance and self.instance.tenant:
-            self.instance.group = self.instance.tenant.group
+        if self.instance:
+            if self.instance.tenant:
+                self.instance.group = self.instance.tenant.group
+            else:
+                self.instance.group = self.cleaned_data['tenant'].group
 
 
 class TenantManagerFormset(TenantRoleFormset):
